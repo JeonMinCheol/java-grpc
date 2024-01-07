@@ -5,7 +5,7 @@ import kr.co.velnova.grpc.helloworld.HelloRequest;
 import kr.co.velnova.grpc.helloworld.HelloResponse;
 import kr.co.velnova.grpc.helloworld.HelloServiceGrpc;
 
-public class helloService extends HelloServiceGrpc.HelloServiceImplBase {
+public class HelloServiceImpl extends HelloServiceGrpc.HelloServiceImplBase {
     @Override
     public void helloWorld(HelloRequest request, StreamObserver<HelloResponse> responseObserver) {
         String firstName = request.getFirstName();
@@ -14,7 +14,7 @@ public class helloService extends HelloServiceGrpc.HelloServiceImplBase {
         System.out.println(request);
 
         HelloResponse helloResponse = HelloResponse.newBuilder()
-                .setMessage(lastName + firstName)
+                .setMessage(lastName + " " + firstName)
                 .build();
 
         try{

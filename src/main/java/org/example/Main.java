@@ -1,17 +1,42 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.Server;
+import kr.co.velnova.grpc.helloworld.HelloRequest;
+import kr.co.velnova.grpc.helloworld.HelloResponse;
+import kr.co.velnova.grpc.helloworld.HelloServiceGrpc;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+import java.io.IOException;
+
+public class Main {
+    public static void main(String[] args) throws IOException, InterruptedException {
+        Server grpcServer = new GrpcServer().server;
+
+        System.out.println("Listening port 5454.");
+
+        grpcServer.start();
+//        grpcServer.awaitTermination();
+
+        // channel 생성
+        ManagedChannel channel = ManagedChannelBuilder
+                .forAddress("localhost", 5454)
+                .usePlaintext() // 평문 연결 : 암호화 X
+                .build();
+
+        // stub 생성
+        HelloServiceGrpc.HelloServiceBlockingStub stub
+                = HelloServiceGrpc.newBlockingStub(channel);
+
+        // 요청 전송 후 결과 반환
+        HelloResponse helloResponse = stub.helloWorld(HelloRequest
+                .newBuilder()
+                .setFirstName("first")
+                .setLastName("last")
+                .build());
+
+        System.out.println(helloResponse);
+
+        channel.shutdown();
     }
 }
